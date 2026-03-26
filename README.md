@@ -14,9 +14,9 @@ O sistema permite registrar medições de umidade, analisar os dados e fornecer 
 
 - Registro de umidade do solo
 - Classificação automática:
-  🔴 Seco (regar)
-  🟡 Ideal
-  🟢 Úmido (não regar)
+  - 🔴 Seco (regar)
+  - 🟡 Ideal
+  - 🟢 Úmido (não regar)
 - Histórico de medições
 - Armazenamento local (LocalStorage)
 - Gráfico de evolução da umidade
