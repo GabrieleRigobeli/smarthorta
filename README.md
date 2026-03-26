@@ -17,7 +17,7 @@ O sistema permite registrar medições de umidade, analisar os dados e fornecer 
   - 🔴 Seco (regar)
   - 🟡 Ideal
   - 🟢 Úmido (não regar)
-- Medições
+- Medições 
 - Armazenamento local (LocalStorage)
 - Gráfico de evolução da umidade
 - Interface simples e intuitiva
