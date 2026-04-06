@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>SmartHorta Escolar</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body { font-family: Arial; background: linear-gradient(to right, #4CAF50, #81C784); margin:0; }
+    .container { max-width:600px; margin:30px auto; background:#fff; padding:20px; border-radius:15px; box-shadow:0 10px 25px rgba(0,0,0,0.2); text-align:center; }
+    h1 { color:#2E7D32; }
+    input { padding:10px; width:80%; border-radius:8px; border:1px solid #ccc; }
+    button { padding:10px 20px; margin-top:10px; background:#4CAF50; color:#fff; border:none; border-radius:8px; cursor:pointer; }
+    button:hover { background:#388E3C; }
+    ul { list-style:none; padding:0; }
+    li { background:#f4f4f4; margin:5px 0; padding:8px; border-radius:6px; text-align:left; }
+    canvas { margin-top:20px; }
+    .status { font-weight:bold; margin-top:10px; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>🌱 SmartHorta </h1>
+  <p>Sistema de Monitoramento e Controle de Irrigação</p>
+
+  <input type="number" id="umidade" placeholder="Digite a umidade (%)">
+  <br>
+  <button onclick="registrar()">Salvar Medição</button>
+
+  <div class="status" id="resultado"></div>
+
+  <h3>Histórico</h3>
+  <ul id="historico"></ul>
+
+  <button onclick="limparHistorico()">Limpar Histórico</button>
+
+  <h3>Gráfico de Umidade</h3>
+  <canvas id="grafico"></canvas>
+</div>
+
+<script>
+let chart;
+
+function verificarUmidade(valor) {
+  if (valor < 30) return {texto:"🔴 Regar", status:"🔴 Seco"};
+  if (valor <= 60) return {texto:"🟡 Ideal", status:"🟡 Ideal"};
+  return {texto:"🟢 Não regar", status:"🟢 Úmido"};
+}
+
+function salvarLocal(dados) {
+  localStorage.setItem("horta", JSON.stringify(dados));
+}
+
+function carregarLocal() {
+  return JSON.parse(localStorage.getItem("horta")) || [];
+}
+
+function registrar() {
+  const valor = document.getElementById("umidade").value;
+  if (!valor) return alert("Digite um valor");
+
+  const resultado = verificarUmidade(valor);
+
+  document.getElementById("resultado").innerHTML = `Umidade: ${valor}% → ${resultado.texto}`;
+
+  let dados = carregarLocal();
+  dados.push({ 
+    valor, 
+    data: new Date().toLocaleDateString(),
+    status: resultado.status
+  });
+  salvarLocal(dados);
+
+  renderHistorico();
+  atualizarGrafico();
+}
+
+function renderHistorico() {
+  const lista = document.getElementById("historico");
+  lista.innerHTML = "";
+
+  carregarLocal().forEach(item => {
+    const li = document.createElement("li");
+    li.textContent = `${item.data} - ${item.valor}% - ${item.status}`;
+    lista.appendChild(li);
+  });
+}
+
+function limparHistorico() {
+  localStorage.removeItem("horta");
+  renderHistorico();
+  atualizarGrafico();
+}
+
+function atualizarGrafico() {
+  const dados = carregarLocal();
+  const labels = dados.map(d => d.data);
+  const valores = dados.map(d => d.valor);
+
+  if (chart) chart.destroy();
+
+  const ctx = document.getElementById('grafico');
+  chart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Umidade (%)',
+        data: valores
+      }]
+    }
+  });
+}
+
+renderHistorico();
+atualizarGrafico();
+</script>
+
+</body>
+</html>
